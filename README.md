@@ -107,11 +107,9 @@ SARSA1.py (Trade execution)
 ---
 
 ## Roadmap
-[ ] Data Sources: Integration of alternative sentiment streams (e.g., Reddit, Twitter API).
-
-[ ] Model Optimization: Migration to Deep Q-Network (DQN) or Proximal Policy Optimization (PPO).
-
-[ ] Asset Management: Support for multi-asset portfolio rebalancing.
+* Data Sources: Integration of alternative sentiment streams (e.g., Reddit, Twitter API).
+* Model Optimization: Migration to Deep Q-Network (DQN) or Proximal Policy Optimization (PPO).
+* Asset Management: Support for multi-asset portfolio rebalancing.
 
 ---
 
