@@ -56,7 +56,7 @@ The architecture combines `FinBERT` for natural language processing of market ne
 
 #### 1. Clone and Install Dependencies
 ```bash
-git clone [https://github.com/iamzayd/AI-Sentiment-Stock-Market-Trader.git](https://github.com/iamzayd/AI-Sentiment-Stock-Market-Trader.git)
+git clone https://github.com/Ndubuisi-Godcares/ReinforceTrader-RL-Based-Stock-Trading-with-Sentiment-Analysis.git
 cd AI-Sentiment-Stock-Market-Trader
 pip install -r requirements.txt
 
