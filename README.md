@@ -59,9 +59,9 @@ The architecture combines `FinBERT` for natural language processing of market ne
 git clone https://github.com/Ndubuisi-Godcares/ReinforceTrader-RL-Based-Stock-Trading-with-Sentiment-Analysis.git
 cd (filename) #Navigate to the folder
 pip install -r requirements.txt
-
----
 ```
+---
+
 ### Configure API Credentials
 
 Create an [Alpaca](https://alpaca.markets/) account and add your keys to `config.py`:
