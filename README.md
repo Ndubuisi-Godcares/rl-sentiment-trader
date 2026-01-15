@@ -64,11 +64,11 @@ pip install -r requirements.txt
 ```
 ### Configure API Credentials
 
-Create an account at [Alpaca](https://alpaca.markets/) and add your keys to `config.py`:
+Create an [Alpaca](https://alpaca.markets/) account and add your keys to `config.py`:
 
 ## API Keys
 
-1. Create an account with [Alpaca](https://alpaca.markets/) to obtain API keys.
+1. Create an [Alpaca](https://alpaca.markets/) account to obtain API keys.
 
 2. Add your Alpaca API keys to the respective scripts (`news_classified.py` and `SARSA1.py`).
 
