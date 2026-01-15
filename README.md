@@ -16,7 +16,7 @@ The architecture combines `FinBERT` for natural language processing of market ne
 ### Technical Specifications
 
 #### Core Components
-* **Sentiment Analysis Engine:** Utilizes [FinBERT](https://arxiv.org/abs/2006.08097) to classify financial news sentiment, providing state signals to the RL agent.
+* **Sentiment Analysis Engine:** Utilizes [FinBERT: Financial Sentiment Analysis with BERT](https://arxiv.org/abs/2006.08097) to classify financial news sentiment, providing state signals to the RL agent.
 * **RL Agent:** Implements the **SARSA** algorithm to approximate the Q-value function and iteratively learn optimal trading policies.
 * **Execution Layer:** Interfaces with **Alpaca Markets API** for secure, real-time order management.
 * **Evaluation Engine:** Leverages **QuantStats** for comprehensive backtesting and risk metric calculation against the S&P 500 benchmark.
