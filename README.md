@@ -42,9 +42,9 @@ The architecture combines `FinBERT` for natural language processing of market ne
 | Metric | System Performance | Benchmark (SPY) |
 | :--- | :--- | :--- |
 | **Cumulative Return** | **80.81%** | 79.08% |
-| **CAGR** | **9.35%** | N/A |
-| **Sharpe Ratio** | **0.47** | N/A |
-| **Max Drawdown** | **-27.06%** | N/A |
+| **CAGR** | **9.35%** | **9.19%** |
+| **Sharpe Ratio** | **0.47** | **0.41%** |
+| **Max Drawdown** | **-27.06%** | **-33.68%** |
 
 > **Note:** Detailed tear sheets and performance reports are generated via `QuantStats`.
 
