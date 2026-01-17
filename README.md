@@ -1,15 +1,9 @@
 # AI Sentiment Stock Market Trader
 
 ### Abstract
-This project implements an automated trading system integrating **Reinforcement Learning (SARSA)** and **financial news sentiment analysis**. The system utilizes a complete Machine Learning pipeline featuring real-time data ingestion, historical backtesting, and live execution via the **Alpaca Trading API**.
+This project and research implements an automated trading system integrating **Reinforcement Learning (SARSA)** and **financial news sentiment analysis**. The system utilizes a complete Machine Learning pipeline featuring real-time data ingestion, historical backtesting, and live execution via the **Alpaca Trading API**.
 
 The architecture combines `FinBERT` for natural language processing of market news with a state-action-reward-state-action (SARSA) agent to optimize trading decisions (Buy/Sell/Hold) based on sentiment signals and market data.
-
----
-
-### Project Maintainers
-* **Ndubuisi Godcares Chibuokem**
-* **Najeeb Saiyed**
 
 ---
 
