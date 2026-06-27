@@ -35,16 +35,18 @@ QuantSentinel is a production-grade algorithmic trading research platform that c
 
 ## Backtest Performance
 
-**Period:** 2020 – 2024 &nbsp;|&nbsp; **Benchmark:** S&P 500 (SPY) &nbsp;|&nbsp; **Engine:** SARSA ε-greedy + FinBERT
+Performance varies by asset, date range, and market conditions. Results are generated dynamically after each run and saved to `reports/tearsheet.html`. The table below shows the documented **SPY reference baseline** (2020 – 2024) used during initial strategy development.
+
+**Reference run:** SPY &nbsp;|&nbsp; 2020 – 2024 &nbsp;|&nbsp; SARSA ε-greedy + FinBERT
 
 | Metric | QuantSentinel | SPY Benchmark |
 | :--- | :---: | :---: |
-| **Cumulative Return** | **80.81%** | 79.08% |
-| **CAGR** | **9.35%** | 9.19% |
-| **Sharpe Ratio** | **0.47** | 0.41 |
-| **Max Drawdown** | **-27.06%** | -33.68% |
+| **Cumulative Return** | 80.81% | 79.08% |
+| **CAGR** | 9.35% | 9.19% |
+| **Sharpe Ratio** | 0.47 | 0.41 |
+| **Max Drawdown** | -27.06% | -33.68% |
 
-> Full tear sheets are generated via QuantStats and saved to `reports/tearsheet.html` after each backtest run.
+> These figures are from the documented baseline run. To see results for the most recent backtest, open `reports/tearsheet.html` in a browser or view live metrics in the dashboard after running a backtest.
 
 ---
 
@@ -177,40 +179,49 @@ This installs: `fastapi`, `uvicorn`, `lumibot`, `alpaca-trade-api`, `torch`, `tr
 
 ---
 
-### Step 4 — Start the Backend Server
-
-```bash
-uvicorn backend.app.main:app --reload --port 8000
-```
-
-The API will be available with interactive documentation at:
-- **Swagger UI:** `http://localhost:8000/docs`
-- **ReDoc:** `http://localhost:8000/redoc`
-
----
-
-### Step 5 — Install Frontend Dependencies
-
-Open a new terminal in the project root:
+### Step 4 — Install Frontend Dependencies
 
 ```bash
 cd frontend
 npm install
+cd ..
 ```
 
 ---
 
-### Step 6 — Start the Frontend
+### Step 5 — Launch the Platform
 
+**Option A — Single command (Windows, recommended)**
+
+Run the included PowerShell script from the project root to start both the backend and frontend in one step. It automatically clears any processes already occupying the required ports, then opens a dedicated terminal window for each service:
+
+```powershell
+.\dev.ps1
+```
+
+The script will print the addresses for both services as each window opens.
+
+> **Tip:** If Windows blocks the script, run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` in PowerShell once, then retry.
+
+**Option B — Manual (any OS)**
+
+Open two separate terminals from the project root:
+
+*Terminal 1 — Backend:*
 ```bash
-npm run dev
+uvicorn backend.app.main:app --reload --port 8000
 ```
 
-The dashboard will open and hot-reload automatically as you make changes.
+*Terminal 2 — Frontend:*
+```bash
+cd frontend && npm run dev
+```
+
+The backend API and its interactive documentation are available once Terminal 1 is ready. The React dashboard starts in Terminal 2 and hot-reloads automatically on file changes.
 
 ---
 
-### Step 7 — Run Your First Backtest
+### Step 6 — Run Your First Backtest
 
 You can trigger a backtest in two ways:
 
@@ -286,6 +297,7 @@ rl-sentiment-trader/
 ├── reports/                         # QuantStats HTML tear sheets
 ├── logs/                            # Q-tables, trade CSVs, run outputs
 ├── data/                            # Benchmark comparison CSVs
+├── dev.ps1                          # One-command launcher (Windows) — starts backend + frontend
 ├── .env                             # API credentials (not committed)
 └── CLAUDE.md                        # AI assistant coding instructions
 ```
