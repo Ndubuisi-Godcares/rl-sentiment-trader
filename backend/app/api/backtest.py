@@ -24,9 +24,24 @@ _wf_results: dict  = {}           # walk-forward period results
 _multi_results: list = []         # per-symbol results for multi-symbol runs
 
 
+def _find_python312() -> str:
+    candidates = [
+        os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Python", "Python312", "python.exe"),
+        "python3.12",
+        "python312",
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return c
+    return sys.executable
+
+
+_PYTHON312 = _find_python312()
+
+
 def _run_subprocess(extra_args: list) -> None:
     subprocess.run(
-        [sys.executable, "trading_engine/sarsa-v1.py"] + extra_args,
+        [_PYTHON312, "trading_engine/sarsa-v1.py"] + extra_args,
         cwd=_REPO_ROOT,
         check=True,
     )

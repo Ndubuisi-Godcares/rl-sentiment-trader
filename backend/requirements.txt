@@ -4,7 +4,6 @@ pydantic
 python-dotenv
 alpaca-trade-api
 pandas
-numpy
 torch
 transformers
 anthropic
@@ -12,5 +11,3 @@ openai
 google-generativeai
 yfinance
 requests
-quantstats
-lumibot
