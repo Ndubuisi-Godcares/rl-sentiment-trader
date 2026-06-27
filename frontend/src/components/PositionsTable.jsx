@@ -44,8 +44,8 @@ export default function PositionsTable({ positions = [], loading = false }) {
     <div
       className="rounded-xl p-6"
       style={{
-        backgroundColor: "rgba(30,41,59,0.4)",
-        border: "1px solid rgba(51,65,85,0.5)",
+        backgroundColor: "var(--c-bg2)",
+        border: "1px solid var(--c-border)",
       }}
     >
       {/* Header row */}
@@ -60,9 +60,9 @@ export default function PositionsTable({ positions = [], loading = false }) {
           <span
             className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border"
             style={{
-              color: positions.length ? "#818cf8" : "#475569",
-              backgroundColor: positions.length ? "rgba(99,102,241,0.1)" : "transparent",
-              borderColor: positions.length ? "rgba(99,102,241,0.25)" : "rgba(71,85,105,0.3)",
+              color: positions.length ? "var(--c-accent)" : "var(--c-text3)",
+              backgroundColor: positions.length ? "var(--c-chip-bg)" : "transparent",
+              borderColor: "var(--c-border)",
             }}
           >
             {positions.length} open
@@ -108,7 +108,7 @@ export default function PositionsTable({ positions = [], loading = false }) {
                     key={p.symbol}
                     className="group transition-colors duration-100 hover:bg-indigo-500/5"
                     style={{
-                      backgroundColor: isEven ? "rgba(30,41,59,0.2)" : "transparent",
+                      backgroundColor: isEven ? "var(--c-bg)" : "transparent",
                     }}
                   >
                     {/* Symbol + source badge */}
@@ -118,7 +118,7 @@ export default function PositionsTable({ positions = [], loading = false }) {
                         {p.source === "backtest" && (
                           <span
                             className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded"
-                            style={{ backgroundColor: "rgba(99,102,241,0.15)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }}
+                            style={{ backgroundColor: "var(--c-chip-bg)", color: "var(--c-accent)", border: "1px solid var(--c-border)" }}
                           >
                             backtest
                           </span>

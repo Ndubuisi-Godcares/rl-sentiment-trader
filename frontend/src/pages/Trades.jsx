@@ -41,7 +41,7 @@ function LiveTradesTable({ trades }) {
   return (
     <div
       className="rounded-xl p-6 overflow-x-auto"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="flex items-center gap-3 mb-5">
         <div>
@@ -51,7 +51,7 @@ function LiveTradesTable({ trades }) {
         </div>
         <span
           className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0"
-          style={{ color: "#818cf8", backgroundColor: "rgba(99,102,241,0.1)", borderColor: "rgba(99,102,241,0.25)" }}
+          style={{ color: "var(--c-accent)", backgroundColor: "var(--c-chip-bg)", borderColor: "var(--c-border)" }}
         >
           {trades.length} orders
         </span>
@@ -115,7 +115,7 @@ function BacktestTradesTable({ trades }) {
   return (
     <div
       className="rounded-xl p-6 overflow-x-auto"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="flex items-center gap-3 mb-5">
         <div>
@@ -125,7 +125,7 @@ function BacktestTradesTable({ trades }) {
         </div>
         <span
           className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0"
-          style={{ color: "#818cf8", backgroundColor: "rgba(99,102,241,0.1)", borderColor: "rgba(99,102,241,0.25)" }}
+          style={{ color: "var(--c-accent)", backgroundColor: "var(--c-chip-bg)", borderColor: "var(--c-border)" }}
         >
           {trades.length} trades
         </span>

@@ -75,7 +75,7 @@ function ComparisonChart({ sarsa, benchmark, symbol = "Strategy" }) {
     return (
       <div
         className="rounded-xl px-4 py-3 text-xs space-y-1"
-        style={{ backgroundColor: "#0f172a", border: "1px solid rgba(51,65,85,0.6)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}
+        style={{ backgroundColor: "var(--c-bg-deep)", border: "1px solid var(--c-border)", boxShadow: "0 8px 32px var(--c-shadow, rgba(0,0,0,0.4))" }}
       >
         <p className="text-slate-500 mb-2">{label}</p>
         {payload.map((p) => (
@@ -96,7 +96,7 @@ function ComparisonChart({ sarsa, benchmark, symbol = "Strategy" }) {
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="mb-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 mb-0.5">
@@ -186,7 +186,7 @@ function MetricsTable({ stats, symbol = "SARSA" }) {
   return (
     <div
       className="rounded-xl p-6 overflow-x-auto"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="mb-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 mb-0.5">
@@ -274,32 +274,32 @@ function AttributionSection({ attribution, stats, symbol = "Strategy" }) {
       title: "Active Trading",
       value: `${totalTrades} trades`,
       desc: `${buyCount} buys · ${sellCount} sells — SARSA learned when to act vs hold.`,
-      color: "#818cf8",
+      color: "var(--c-accent)",
     },
     {
       title: "Win Rate",
       value: winRate != null ? `${winRate}%` : "--",
       desc: `${attribution?.winning_trades ?? 0} profitable exits out of ${attribution?.buy_count ?? 0} trades matched.`,
-      color: "#6ee7b7",
+      color: "var(--c-positive)",
     },
     {
       title: "Return vs Benchmark",
       value: totalReturn != null && spyReturn != null ? fmtPct(parseFloat(totalReturn) - parseFloat(spyReturn)) : "--",
       desc: `Cumulative alpha generated vs ${symbol} buy-and-hold over the same period.`,
-      color: "#f59e0b",
+      color: "var(--c-warn)",
     },
     {
       title: "Risk-Adjusted Edge",
       value: sharpe ?? "--",
       desc: `Sharpe Ratio. Max drawdown ${drawdown ?? "--"} — compared to ${symbol} buy-and-hold drawdowns.`,
-      color: "#a78bfa",
+      color: "var(--c-accent)",
     },
   ];
 
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="mb-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 mb-0.5">
@@ -316,7 +316,7 @@ function AttributionSection({ attribution, stats, symbol = "Strategy" }) {
           <div
             key={title}
             className="rounded-xl p-4 flex flex-col gap-2"
-            style={{ backgroundColor: "rgba(15,23,42,0.6)", border: `1px solid rgba(${hexToRgb(color)},0.2)` }}
+            style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border)" }}
           >
             <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">{title}</p>
             <p className="text-xl font-bold tabular-nums" style={{ color }}>{value}</p>
@@ -342,20 +342,13 @@ function AttributionSection({ attribution, stats, symbol = "Strategy" }) {
   );
 }
 
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r},${g},${b}`;
-}
-
 // ─── Empty / loading states ───────────────────────────────────────────────────
 
 function Empty() {
   return (
     <div
       className="rounded-xl p-12 flex flex-col items-center gap-3 text-slate-600"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10 text-slate-700">
         <path d="M4 34 L14 20 L22 28 L30 14 L36 20" />

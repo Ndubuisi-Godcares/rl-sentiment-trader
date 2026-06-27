@@ -44,8 +44,8 @@ export default function SentimentWidget({ data, loading = false, symbol = "SPY" 
     <div
       className="rounded-xl p-6 flex flex-col gap-5 relative overflow-hidden"
       style={{
-        backgroundColor: "rgba(30,41,59,0.4)",
-        border: "1px solid rgba(51,65,85,0.5)",
+        backgroundColor: "var(--c-bg2)",
+        border: "1px solid var(--c-border)",
       }}
     >
       {/* Background glow */}
@@ -120,14 +120,14 @@ export default function SentimentWidget({ data, loading = false, symbol = "SPY" 
             <div className="grid grid-cols-2 gap-3">
               <div
                 className="rounded-lg px-3 py-2 flex flex-col gap-0.5"
-                style={{ backgroundColor: "rgba(15,23,42,0.5)", border: "1px solid rgba(51,65,85,0.3)" }}
+                style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border-s)" }}
               >
                 <span className="text-[10px] text-slate-600 uppercase tracking-widest font-semibold">Confidence</span>
                 <span className="text-sm font-bold tabular-nums text-slate-100">{confidencePct}%</span>
               </div>
               <div
                 className="rounded-lg px-3 py-2 flex flex-col gap-0.5"
-                style={{ backgroundColor: "rgba(15,23,42,0.5)", border: "1px solid rgba(51,65,85,0.3)" }}
+                style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border-s)" }}
               >
                 <span className="text-[10px] text-slate-600 uppercase tracking-widest font-semibold">Articles</span>
                 <span className="text-sm font-bold tabular-nums text-slate-100">{data.headline_count ?? "--"}</span>

@@ -65,8 +65,8 @@ function fmtElapsed(ms) {
 const Q_ACTIONS = ["buy", "sell", "hold"];
 
 const SENTIMENT_COLOR = { positive: "#10b981", neutral: "#94a3b8", negative: "#f43f5e" };
-const TREND_COLOR     = { bull: "#6ee7b7", bear: "#f87171", "n/a": "#64748b" };
-const ACTION_COLOR    = { buy: "#6ee7b7", sell: "#f87171", hold: "#94a3b8" };
+const TREND_COLOR  = { bull: "var(--c-positive)", bear: "var(--c-negative)", "n/a": "var(--c-text3)" };
+const ACTION_COLOR = { buy: "var(--c-positive)", sell: "var(--c-negative)", hold: "var(--c-text3)" };
 
 function stateColor(state) {
   if (state.startsWith("positive")) return SENTIMENT_COLOR.positive;
@@ -82,7 +82,7 @@ function QCell({ value }) {
   const bg = norm >= 0
     ? `rgba(16,185,129,${0.08 + green / 250})`
     : `rgba(244,63,94,${0.08 + red / 250})`;
-  const textColor = Math.abs(norm) < 0.05 ? "#64748b" : norm > 0 ? "#6ee7b7" : "#fca5a5";
+  const textColor = Math.abs(norm) < 0.05 ? "var(--c-text3)" : norm > 0 ? "var(--c-positive)" : "var(--c-negative)";
   return (
     <td
       className="text-center tabular-nums font-mono text-xs py-2 px-2"
@@ -132,7 +132,7 @@ function LearningPanel() {
     return (
       <div
         className="rounded-xl px-5 py-4 flex items-center gap-3"
-        style={{ backgroundColor: "rgba(15,23,42,0.5)", border: "1px solid rgba(51,65,85,0.3)" }}
+        style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border-s)" }}
       >
         <span className="inline-flex h-2 w-2 rounded-full bg-indigo-400 animate-ping" />
         <span className="text-xs text-slate-500">Waiting for first 50 iterations before learning data appears…</span>
@@ -153,7 +153,7 @@ function LearningPanel() {
   return (
     <div
       className="rounded-xl overflow-hidden"
-      style={{ backgroundColor: "rgba(15,23,42,0.6)", border: "1px solid rgba(99,102,241,0.2)" }}
+      style={{ backgroundColor: "var(--c-bg)", border: "1px solid rgba(99,102,241,0.2)" }}
     >
       {/* Header */}
       <button
@@ -236,7 +236,7 @@ function LearningPanel() {
                   <div
                     key={i}
                     className="rounded-lg px-3 py-2 flex items-center gap-2"
-                    style={{ backgroundColor: "rgba(30,41,59,0.5)", border: "1px solid rgba(51,65,85,0.3)" }}
+                    style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border-s)" }}
                   >
                     <span className="text-[9px] font-mono text-slate-600 flex-shrink-0">{d.date}</span>
                     <span
@@ -284,7 +284,7 @@ function WalkForwardPanel({ wf }) {
   return (
     <div
       className="rounded-xl p-6 space-y-5"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(99,102,241,0.25)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid rgba(99,102,241,0.25)" }}
     >
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-indigo-400 mb-0.5">
@@ -343,7 +343,7 @@ function MultiSymbolPanel({ results }) {
   return (
     <div
       className="rounded-xl p-6 space-y-5"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 mb-0.5">
@@ -397,7 +397,7 @@ function RunningView({ startedAt, startDate, endDate, symbol = "SPY", lastStats 
   return (
     <div
       className="rounded-xl p-6 space-y-6"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       {/* Header row */}
       <div className="flex items-center justify-between gap-4">
@@ -416,7 +416,7 @@ function RunningView({ startedAt, startDate, endDate, symbol = "SPY", lastStats 
                   className="ml-2 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
                   style={{
                     backgroundColor: phase === "training" ? "rgba(16,185,129,0.12)" : phase === "testing" ? "rgba(99,102,241,0.12)" : "rgba(51,65,85,0.4)",
-                    color: phase === "training" ? "#6ee7b7" : phase === "testing" ? "#818cf8" : "#94a3b8",
+                    color: phase === "training" ? "var(--c-positive)" : phase === "testing" ? "var(--c-accent)" : "var(--c-text3)",
                   }}
                 >
                   {phase}
@@ -503,7 +503,7 @@ function RunningView({ startedAt, startDate, endDate, symbol = "SPY", lastStats 
                 <div
                   key={label}
                   className="rounded-lg px-3 py-3"
-                  style={{ backgroundColor: "rgba(15,23,42,0.6)", border: "1px solid rgba(51,65,85,0.35)" }}
+                  style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border-s)" }}
                 >
                   <p className="text-[10px] text-slate-600 uppercase tracking-widest font-semibold mb-1.5">{label}</p>
                   <p className={`text-xl font-bold tabular-nums ${color}`}>{value ?? "--"}</p>
@@ -549,7 +549,7 @@ function StatsTable({ stats }) {
   return (
     <div
       className="rounded-xl p-6 overflow-x-auto"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="mb-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 mb-0.5">
@@ -573,7 +573,7 @@ function StatsTable({ stats }) {
             <tr
               key={metric}
               className="hover:bg-indigo-500/5 transition-colors"
-              style={{ backgroundColor: idx % 2 === 0 ? "rgba(30,41,59,0.2)" : "transparent" }}
+              style={{ backgroundColor: idx % 2 === 0 ? "var(--c-bg)" : "transparent" }}
             >
               <td className="py-2 pl-1 pr-4 text-slate-400 font-medium whitespace-nowrap">{metric}</td>
               {columns.map((col) => (
@@ -599,7 +599,7 @@ function TradesTable({ trades }) {
   return (
     <div
       className="rounded-xl p-6 overflow-x-auto"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="flex items-center gap-3 mb-5">
         <div>
@@ -608,7 +608,7 @@ function TradesTable({ trades }) {
         </div>
         <span
           className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border"
-          style={{ color: "#818cf8", backgroundColor: "rgba(99,102,241,0.1)", borderColor: "rgba(99,102,241,0.25)" }}
+          style={{ color: "var(--c-accent)", backgroundColor: "var(--c-chip-bg)", borderColor: "var(--c-border)" }}
         >
           {trades.length} trades
         </span>
@@ -627,7 +627,7 @@ function TradesTable({ trades }) {
             <tr
               key={idx}
               className="hover:bg-indigo-500/5 transition-colors"
-              style={{ backgroundColor: idx % 2 === 0 ? "rgba(30,41,59,0.2)" : "transparent" }}
+              style={{ backgroundColor: idx % 2 === 0 ? "var(--c-bg)" : "transparent" }}
             >
               {columns.map((col) => (
                 <td
@@ -649,7 +649,7 @@ function EmptyState() {
   return (
     <div
       className="rounded-xl p-12 flex flex-col items-center gap-3 text-slate-600"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10 text-slate-700">
         <rect x="4" y="4" width="32" height="32" rx="4" />
@@ -678,7 +678,7 @@ export default function Backtest() {
   const [endDate, setEndDate]         = useState(TODAY);
   const [walkForward, setWalkForward] = useState(false);
   const [extraSymbols, setExtraSymbols] = useState([]); // up to 4 additional
-  const { symbol, setSymbol }         = useTheme();
+  const { symbol, setSymbol, isLight } = useTheme();
 
   const load = useCallback(async () => {
     try {
@@ -771,7 +771,7 @@ export default function Backtest() {
               <p className="text-[11px] text-slate-600 mt-1.5 flex items-center gap-1.5">
                 <span
                   className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest"
-                  style={{ backgroundColor: "rgba(51,65,85,0.5)", color: "#64748b" }}
+                  style={{ backgroundColor: "var(--c-bg2)", color: "var(--c-text3)" }}
                 >
                   Previous run
                 </span>
@@ -822,7 +822,7 @@ export default function Backtest() {
             {/* Date range picker */}
             <div
               className="flex items-center gap-2 px-3 py-2 rounded-lg"
-              style={{ backgroundColor: "rgba(30,41,59,0.6)", border: "1px solid rgba(51,65,85,0.5)" }}
+              style={{ backgroundColor: "var(--c-bg3)", border: "1px solid var(--c-border)" }}
             >
               <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">From</span>
               <input
@@ -832,7 +832,7 @@ export default function Backtest() {
                 onChange={(e) => setStartDate(e.target.value)}
                 disabled={busy}
                 className="bg-transparent text-slate-200 text-xs font-mono border-0 outline-none disabled:opacity-40"
-                style={{ colorScheme: "dark" }}
+                style={{ colorScheme: isLight ? "light" : "dark" }}
               />
               <span className="text-slate-600 text-xs">→</span>
               <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">To</span>
@@ -844,7 +844,7 @@ export default function Backtest() {
                 onChange={(e) => setEndDate(e.target.value)}
                 disabled={busy}
                 className="bg-transparent text-slate-200 text-xs font-mono border-0 outline-none disabled:opacity-40"
-                style={{ colorScheme: "dark" }}
+                style={{ colorScheme: isLight ? "light" : "dark" }}
               />
             </div>
 

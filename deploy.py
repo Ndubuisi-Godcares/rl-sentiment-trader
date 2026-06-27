@@ -50,10 +50,11 @@ def _require(key, prompt):
         val = input(f"{prompt}: ").strip()
     return val
 
-HF_TOKEN     = _require("HF_TOKEN",     "Hugging Face token (hf_...)")
-HF_USERNAME  = _require("HF_USERNAME",  "Hugging Face username")
-HF_SPACE     = os.getenv("HF_SPACE_NAME", "sarsa-trader-api").strip()
-VERCEL_TOKEN = _require("VERCEL_TOKEN", "Vercel token")
+HF_TOKEN      = _require("HF_TOKEN",     "Hugging Face token (hf_...)")
+HF_USERNAME   = _require("HF_USERNAME",  "Hugging Face username")
+HF_SPACE      = os.getenv("HF_SPACE_NAME", "sarsa-trader-api").strip()
+VERCEL_TOKEN  = _require("VERCEL_TOKEN", "Vercel token")
+VERCEL_SCOPE  = os.getenv("VERCEL_SCOPE", "godcares-ndubuisis-projects").strip()
 API_KEY      = os.getenv("API_KEY",  "")
 API_SECRET   = os.getenv("API_SECRET","")
 BASE_URL     = os.getenv("BASE_URL",  "https://paper-api.alpaca.markets/v2")
@@ -108,40 +109,37 @@ print(f"      Env vars set.\n      Backend URL: {SPACE_URL}")
 
 print("\n[2/3] Deploying frontend to Vercel...")
 
-if not shutil.which("vercel"):
+IS_WINDOWS = sys.platform == "win32"
+
+if not shutil.which("vercel") and not shutil.which("vercel.cmd"):
     print("      Installing Vercel CLI...")
-    subprocess.run(["npm", "install", "-g", "vercel"], check=True)
+    subprocess.run("npm install -g vercel", check=True, shell=IS_WINDOWS)
 
 env = {**os.environ, "VITE_API_URL": SPACE_URL}
 
-result = subprocess.run(
-    [
-        "vercel",
-        "--cwd",    str(REPO_ROOT / "frontend"),
-        "--token",  VERCEL_TOKEN,
-        "--yes",
-        "--prod",
-    ],
-    capture_output=True,
-    text=True,
-    env=env,
+vercel_cmd = "vercel --cwd {} --token {} --scope {} --yes --prod".format(
+    str(REPO_ROOT / "frontend"), VERCEL_TOKEN, VERCEL_SCOPE
 )
 
-if result.returncode != 0:
-    print(f"      Vercel error:\n{result.stderr}")
+print("      Running Vercel CLI (output below):")
+print("      " + "-" * 50)
+
+ret = subprocess.run(
+    vercel_cmd if IS_WINDOWS else [
+        "vercel", "--cwd", str(REPO_ROOT / "frontend"),
+        "--token", VERCEL_TOKEN, "--scope", VERCEL_SCOPE, "--yes", "--prod",
+    ],
+    env=env,
+    shell=IS_WINDOWS,
+)
+
+print("      " + "-" * 50)
+
+if ret.returncode != 0:
+    print("      Vercel deploy failed (see output above).")
     sys.exit(1)
 
-# Extract deployed URL from output
-vercel_url = None
-for line in (result.stdout + result.stderr).splitlines():
-    line = line.strip()
-    if line.startswith("https://") and "vercel.app" in line:
-        vercel_url = line
-        break
-
-if not vercel_url:
-    print("      Could not detect Vercel URL automatically.")
-    vercel_url = input("      Paste your Vercel deployment URL: ").strip()
+vercel_url = input("\n      Paste the deployed Vercel URL from the output above: ").strip()
 
 print(f"      Frontend URL: {vercel_url}")
 

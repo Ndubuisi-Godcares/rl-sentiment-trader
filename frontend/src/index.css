@@ -2,38 +2,251 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+
 body {
-  @apply text-slate-100;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   background: transparent;
 }
 
-/* Smooth scrollbar for dark theme */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
 
-/* Pulsing live dot */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--c-scrollbar, #334155);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--c-scrollbar-hover, #475569); }
+
+/* ─── Pulse animation ───────────────────────────────────────────────────────── */
+
 @keyframes pulse-live {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
 }
-.pulse-live {
-  animation: pulse-live 2s ease-in-out infinite;
+.pulse-live { animation: pulse-live 2s ease-in-out infinite; }
+
+/* Bar width transition */
+.bar-transition { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ─── Card elevation (dark themes) ─────────────────────────────────────────── */
+
+[data-light="false"] .sarsa-card {
+  background-color: var(--c-bg);
+  border: 1px solid var(--c-border);
 }
 
-/* Confidence bar transition */
-.bar-transition {
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+/* ─── Dark theme text readability ───────────────────────────────────────────── */
+/* text-slate-600 (#475569) ~2.5:1 on pitch black — bump to readable mid-grays */
+
+[data-light="false"] .text-slate-600 { color: #64748b !important; }
+[data-light="false"] .text-slate-700 { color: #94a3b8 !important; }
+
+/* ─── Light theme: remap all "dark-friendly" Tailwind slate classes ─────────── */
+/* Slate 100–700 are near-white or light-gray — invisible on white backgrounds.
+   Remap to the theme's own dark text variables. */
+
+[data-light="true"] .text-slate-50,
+[data-light="true"] .text-slate-100,
+[data-light="true"] .text-slate-200  { color: var(--c-text1) !important; }
+[data-light="true"] .text-slate-300,
+[data-light="true"] .text-slate-400  { color: var(--c-text2) !important; }
+[data-light="true"] .text-slate-500,
+[data-light="true"] .text-slate-600,
+[data-light="true"] .text-slate-700  { color: var(--c-text3) !important; }
+/* text-white is invisible on white — force to theme primary text */
+[data-light="true"] .text-white       { color: var(--c-text1) !important; }
+
+/* ─── Light theme: colored accent classes (vivid on dark, too faint on white) ── */
+/* Emerald-400 (#34d399) on white = ~1.9:1 — fails WCAG.  Use darker variants. */
+[data-light="true"] .text-emerald-300,
+[data-light="true"] .text-emerald-400 { color: var(--c-positive) !important; }
+[data-light="true"] .text-emerald-500 { color: var(--c-positive) !important; }
+
+/* Red-300 (#fca5a5) / Red-400 (#f87171) on white = ~1.7:1 — unusable */
+[data-light="true"] .text-red-300,
+[data-light="true"] .text-red-400    { color: var(--c-negative) !important; }
+
+/* Rose-400 same family */
+[data-light="true"] .text-rose-400   { color: var(--c-negative) !important; }
+
+/* Amber-300 (#fcd34d) / Amber-400 (#fbbf24) on white = ~1.8:1 — unusable */
+[data-light="true"] .text-amber-300,
+[data-light="true"] .text-amber-400  { color: var(--c-warn) !important; }
+
+/* ─── Indigo / accent: per-theme since each theme has its own accent colour ─── */
+[data-theme="white"]   .text-indigo-300,
+[data-theme="white"]   .text-indigo-400,
+[data-theme="white"]   .text-indigo-500 { color: #4f46e5 !important; }
+
+[data-theme="crystal"] .text-indigo-300,
+[data-theme="crystal"] .text-indigo-400,
+[data-theme="crystal"] .text-indigo-500 { color: #4338ca !important; }
+
+[data-theme="ivory"]   .text-indigo-300,
+[data-theme="ivory"]   .text-indigo-400,
+[data-theme="ivory"]   .text-indigo-500 { color: #c4873e !important; }
+
+[data-theme="paper"]   .text-indigo-300,
+[data-theme="paper"]   .text-indigo-400,
+[data-theme="paper"]   .text-indigo-500 { color: #0369a1 !important; }
+
+/* ─── Border overrides ──────────────────────────────────────────────────────── */
+[data-light="true"] .border-slate-700,
+[data-light="true"] .border-slate-700\/30,
+[data-light="true"] .border-slate-700\/50 { border-color: var(--c-border) !important; }
+[data-light="true"] .border-slate-800,
+[data-light="true"] .border-slate-800\/60  { border-color: var(--c-border-s) !important; }
+
+/* ─── Light theme bg chip/progress overrides (shared) ───────────────────── */
+/* These dark bg classes become invisible on light backgrounds */
+
+[data-light="true"] .bg-slate-800\/40,
+[data-light="true"] .bg-slate-800\/60 { background-color: rgba(226,232,240,0.6) !important; }
+[data-light="true"] .bg-slate-800     { background-color: rgba(226,232,240,0.9) !important; }
+[data-light="true"] .bg-slate-700     { background-color: rgba(203,213,225,0.7) !important; }
+[data-light="true"] .bg-slate-700\/60 { background-color: rgba(203,213,225,0.5) !important; }
+
+/* Progress bar track — dark on dark is fine, needs to show on light */
+[data-light="true"] .bg-slate-700\/60.h-2 { background-color: rgba(203,213,225,0.6) !important; }
+
+/* ─── Ivory theme overrides ──────────────────────────────────────────────── */
+
+[data-theme="ivory"] .rounded-xl,
+[data-theme="ivory"] .rounded-lg {
+  backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: 0 4px 24px rgba(100,60,10,0.10), 0 1px 4px rgba(0,0,0,0.04);
+}
+[data-theme="ivory"] .bg-slate-800\/40,
+[data-theme="ivory"] .bg-slate-800\/60 { background-color: rgba(240,230,210,0.6) !important; }
+[data-theme="ivory"] .bg-slate-800     { background-color: rgba(240,230,210,0.9) !important; }
+[data-theme="ivory"] .bg-slate-700     { background-color: rgba(230,215,190,0.7) !important; }
+[data-theme="ivory"] .bg-slate-700\/60 { background-color: rgba(230,215,190,0.5) !important; }
+[data-theme="ivory"] .animate-pulse {
+  background: linear-gradient(90deg, rgba(220,210,190,0.3) 25%, rgba(220,210,190,0.5) 50%, rgba(220,210,190,0.3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+[data-theme="ivory"] .text-indigo-400   { color: #c4873e !important; }
+[data-theme="ivory"] .text-indigo-300   { color: #d4973e !important; }
+[data-theme="ivory"] .text-indigo-500   { color: #c4873e !important; }
+[data-theme="ivory"] .bg-indigo-500\/15 { background-color: rgba(196,135,62,0.14) !important; }
+[data-theme="ivory"] .border-indigo-500\/20 { border-color: rgba(196,135,62,0.28) !important; }
+
+/* ─── Crystal theme overrides ───────────────────────────────────────────── */
+
+[data-theme="crystal"] .rounded-xl,
+[data-theme="crystal"] .rounded-lg {
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 0 4px 24px rgba(60,70,180,0.08), 0 1px 4px rgba(0,0,0,0.04);
+}
+[data-theme="crystal"] .bg-slate-800\/40,
+[data-theme="crystal"] .bg-slate-800\/60 { background-color: rgba(220,225,255,0.55) !important; }
+[data-theme="crystal"] .bg-slate-800     { background-color: rgba(220,225,255,0.85) !important; }
+[data-theme="crystal"] .bg-slate-700     { background-color: rgba(230,234,255,0.7) !important; }
+[data-theme="crystal"] .bg-slate-700\/60 { background-color: rgba(230,234,255,0.5) !important; }
+[data-theme="crystal"] .animate-pulse {
+  background: linear-gradient(90deg, rgba(200,205,255,0.3) 25%, rgba(200,205,255,0.5) 50%, rgba(200,205,255,0.3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── White theme overrides ─────────────────────────────────────────────── */
+
+[data-theme="white"] .rounded-xl,
+[data-theme="white"] .rounded-lg {
+  box-shadow: 0 1px 3px rgba(15,23,42,0.07), 0 4px 16px rgba(15,23,42,0.05);
+}
+[data-theme="white"] .bg-slate-800\/40,
+[data-theme="white"] .bg-slate-800\/60 { background-color: rgba(241,245,249,0.8) !important; }
+[data-theme="white"] .bg-slate-800     { background-color: #f1f5f9 !important; }
+[data-theme="white"] .bg-slate-700     { background-color: #f8fafc !important; }
+[data-theme="white"] .bg-slate-700\/60 { background-color: rgba(248,250,252,0.8) !important; }
+[data-theme="white"] .animate-pulse {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Paper theme overrides ─────────────────────────────────────────────── */
+
+[data-theme="paper"] .rounded-xl,
+[data-theme="paper"] .rounded-lg {
+  box-shadow: 0 1px 3px rgba(12,26,46,0.07), 0 4px 16px rgba(14,165,233,0.06);
+}
+[data-theme="paper"] .bg-slate-800\/40,
+[data-theme="paper"] .bg-slate-800\/60 { background-color: rgba(224,242,254,0.7) !important; }
+[data-theme="paper"] .bg-slate-800     { background-color: #e0f2fe !important; }
+[data-theme="paper"] .bg-slate-700     { background-color: #f0f9ff !important; }
+[data-theme="paper"] .bg-slate-700\/60 { background-color: rgba(240,249,255,0.8) !important; }
+[data-theme="paper"] .animate-pulse {
+  background: linear-gradient(90deg, #e0f2fe 25%, #bae6fd 50%, #e0f2fe 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+[data-theme="paper"] .text-indigo-400   { color: #0ea5e9 !important; }
+[data-theme="paper"] .text-indigo-300   { color: #38bdf8 !important; }
+[data-theme="paper"] .text-indigo-500   { color: #0284c7 !important; }
+[data-theme="paper"] .bg-indigo-500\/15 { background-color: rgba(14,165,233,0.12) !important; }
+[data-theme="paper"] .border-indigo-500\/20 { border-color: rgba(14,165,233,0.25) !important; }
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Ambient glow (light themes) ───────────────────────────────────────── */
+
+[data-light="true"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="ivory"] body::before {
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(196,135,62,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 80%, rgba(180,120,50,0.06) 0%, transparent 70%);
+}
+
+[data-theme="crystal"] body::before {
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(99,102,241,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 85% 85%, rgba(129,140,248,0.06) 0%, transparent 70%);
+}
+
+[data-theme="white"] body::before {
+  background: none;
+}
+
+[data-theme="paper"] body::before {
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 10%, rgba(14,165,233,0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 90% 90%, rgba(56,189,248,0.05) 0%, transparent 65%);
+}
+
+/* ─── Topbar market status badge ────────────────────────────────────────────── */
+
+[data-light="true"] .market-badge {
+  background-color: var(--c-status-bg) !important;
+  border-color: var(--c-status-border) !important;
+}
+
+/* bg-emerald-400 dot in topbar is #34d399 — too faint on white, darken it */
+[data-light="true"] .bg-emerald-400 { background-color: var(--c-positive) !important; }
+[data-light="true"] .bg-amber-400   { background-color: var(--c-warn) !important; }
+
+/* ─── Sidebar nav hover/active ──────────────────────────────────────────────── */
+
+.nav-link-active {
+  background-color: var(--c-nav-active-bg) !important;
+  color: var(--c-nav-active-text) !important;
+  border-color: var(--c-nav-active-border) !important;
+}
+
+.nav-link-idle:hover {
+  background-color: var(--c-nav-hover-bg) !important;
 }

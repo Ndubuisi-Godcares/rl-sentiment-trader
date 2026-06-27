@@ -9,6 +9,7 @@ import {
   Legend,
   ReferenceLine,
 } from "recharts";
+import { useTheme } from "../context/ThemeContext";
 
 /**
  * Portfolio equity curve from backtest_series.
@@ -28,21 +29,21 @@ function CustomTooltip({ active, payload, label }) {
   return (
     <div
       style={{
-        backgroundColor: "#0f172a",
-        border: "1px solid rgba(99,102,241,0.3)",
+        backgroundColor: "var(--c-bg-deep)",
+        border: "1px solid var(--c-border)",
         borderRadius: 8,
         padding: "10px 14px",
         minWidth: 180,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
       }}
     >
-      <p style={{ color: "#64748b", fontSize: 11, marginBottom: 6, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+      <p style={{ color: "var(--c-text3)", fontSize: 11, marginBottom: 6, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
         {label}
       </p>
       {payload.map((entry) => (
         <div key={entry.dataKey} style={{ display: "flex", justifyContent: "space-between", gap: 24, marginBottom: 2 }}>
           <span style={{ color: entry.color, fontSize: 12 }}>{entry.name}</span>
-          <span style={{ color: "#f1f5f9", fontSize: 12, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
+          <span style={{ color: "var(--c-text1)", fontSize: 12, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
             ${Number(entry.value).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </span>
         </div>
@@ -52,13 +53,17 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function EquityChart({ data = [], dateRange = null }) {
+  const { isLight } = useTheme();
+  const tickColor  = isLight ? "#475569" : "#94a3b8";
+  const gridStroke = isLight ? "rgba(100,116,139,0.18)" : "rgba(51,65,85,0.4)";
+
   if (!data.length) {
     return (
       <div
         className="rounded-xl p-6 flex flex-col items-center justify-center text-slate-500 text-sm h-64 gap-2"
         style={{
-          backgroundColor: "rgba(30,41,59,0.4)",
-          border: "1px solid rgba(51,65,85,0.5)",
+          backgroundColor: "var(--c-bg2)",
+          border: "1px solid var(--c-border)",
         }}
       >
         <svg viewBox="0 0 40 40" fill="none" className="w-8 h-8 text-slate-700" stroke="currentColor" strokeWidth="1.5">
@@ -90,8 +95,8 @@ export default function EquityChart({ data = [], dateRange = null }) {
     <div
       className="rounded-xl p-6"
       style={{
-        backgroundColor: "rgba(30,41,59,0.4)",
-        border: "1px solid rgba(51,65,85,0.5)",
+        backgroundColor: "var(--c-bg2)",
+        border: "1px solid var(--c-border)",
       }}
     >
       {/* Header */}
@@ -121,17 +126,17 @@ export default function EquityChart({ data = [], dateRange = null }) {
             ))}
           </defs>
 
-          <CartesianGrid strokeDasharray="2 4" stroke="rgba(51,65,85,0.4)" vertical={false} />
+          <CartesianGrid strokeDasharray="2 4" stroke={gridStroke} vertical={false} />
 
           <XAxis
             dataKey={dateKey}
-            tick={{ fill: "#475569", fontSize: 10, fontWeight: 500 }}
+            tick={{ fill: tickColor, fontSize: 10, fontWeight: 500 }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: "#475569", fontSize: 10 }}
+            tick={{ fill: tickColor, fontSize: 10 }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
@@ -146,7 +151,7 @@ export default function EquityChart({ data = [], dateRange = null }) {
             label={{
               value: "$100k",
               position: "insideTopRight",
-              fill: "#475569",
+              fill: tickColor,
               fontSize: 9,
               fontWeight: 600,
             }}
@@ -155,7 +160,7 @@ export default function EquityChart({ data = [], dateRange = null }) {
           <Tooltip content={<CustomTooltip />} />
 
           <Legend
-            wrapperStyle={{ color: "#64748b", fontSize: 11, paddingTop: 12 }}
+            wrapperStyle={{ color: tickColor, fontSize: 11, paddingTop: 12 }}
             iconType="circle"
             iconSize={6}
           />

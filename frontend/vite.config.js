@@ -10,6 +10,14 @@ export default defineConfig(({ command }) => ({
             target: "http://localhost:8000",
             rewrite: (path) => path.replace(/^\/api/, ""),
             changeOrigin: true,
+            ws: false,
+            configure: (proxy) => {
+              proxy.on("proxyReq", (_, req) => {
+                if (req.headers.accept?.includes("text/event-stream")) {
+                  req.socket.setTimeout(0);
+                }
+              });
+            },
           },
         },
       }

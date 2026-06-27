@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
 import Topbar from "../components/Topbar";
 import SymbolPicker from "../components/SymbolPicker";
@@ -45,7 +45,7 @@ function SentimentCard({ data }) {
   return (
     <div
       className="rounded-xl p-6 relative overflow-hidden"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       {/* Glow */}
       <span
@@ -94,7 +94,7 @@ function SentimentCard({ data }) {
               <div
                 key={label}
                 className="rounded-lg px-4 py-3 flex flex-col gap-0.5"
-                style={{ backgroundColor: "rgba(15,23,42,0.6)", border: "1px solid rgba(51,65,85,0.4)" }}
+                style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border)" }}
               >
                 <span className="text-[10px] text-slate-600 uppercase tracking-widest font-semibold">{label}</span>
                 <span className="text-xl font-bold tabular-nums text-slate-100">{value}</span>
@@ -107,11 +107,12 @@ function SentimentCard({ data }) {
   );
 }
 
+// Source badge text uses CSS vars so colours adapt across themes
 const SOURCE_COLORS = {
-  benzinga:     { bg: "rgba(251,191,36,0.12)",  border: "rgba(251,191,36,0.3)",  text: "#fbbf24" },
-  reuters:      { bg: "rgba(59,130,246,0.12)",  border: "rgba(59,130,246,0.3)",  text: "#60a5fa" },
-  "the fly":    { bg: "rgba(99,102,241,0.12)",  border: "rgba(99,102,241,0.3)",  text: "#818cf8" },
-  default:      { bg: "rgba(51,65,85,0.3)",     border: "rgba(71,85,105,0.4)",   text: "#94a3b8" },
+  benzinga:  { bg: "rgba(251,191,36,0.10)", border: "rgba(251,191,36,0.25)", text: "var(--c-warn)" },
+  reuters:   { bg: "rgba(59,130,246,0.10)", border: "rgba(59,130,246,0.25)", text: "var(--c-accent)" },
+  "the fly": { bg: "var(--c-chip-bg)",      border: "var(--c-border)",       text: "var(--c-accent)" },
+  default:   { bg: "rgba(51,65,85,0.20)",   border: "rgba(71,85,105,0.3)",   text: "var(--c-text3)" },
 };
 
 function sourceBadgeStyle(source) {
@@ -128,12 +129,170 @@ function fmtDate(iso) {
   });
 }
 
-function ArticleList({ articles }) {
+// ─── Inline markdown renderer (headings + bold) ──────────────────────────────
+function renderInsight(text) {
+  return text.split("\n").map((line, i) => {
+    if (line.startsWith("## ")) {
+      return (
+        <p key={i} className="text-[11px] font-bold uppercase tracking-widest text-indigo-300 mt-3 mb-1">
+          {line.slice(3)}
+        </p>
+      );
+    }
+    const parts = line.split(/(\*\*[^*]+\*\*)/g);
+    return (
+      <p key={i} className="text-xs text-slate-300 leading-relaxed">
+        {parts.map((p, j) =>
+          p.startsWith("**") && p.endsWith("**")
+            ? <strong key={j} className="text-slate-100 font-semibold">{p.slice(2, -2)}</strong>
+            : p
+        )}
+      </p>
+    );
+  });
+}
+
+// ─── Per-article AI Insight ───────────────────────────────────────────────────
+const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
+
+function ArticleInsight({ article, symbol }) {
+  const [open,      setOpen]      = useState(false);
+  const [insight,   setInsight]   = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const [error,     setError]     = useState(null);
+  const accumulated = useRef("");
+
+  const fetchInsight = async () => {
+    if (streaming) return;
+    if (insight) { setOpen((o) => !o); return; }
+    setOpen(true);
+    setStreaming(true);
+    setError(null);
+    accumulated.current = "";
+
+    try {
+      const res = await fetch(`${BASE_URL}/analysis/news-explain`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          headline:    article.headline,
+          sentiment:   article.sentiment ?? "neutral",
+          probability: article.probability ?? null,
+          symbol:      symbol ?? "SPY",
+          source:      article.source ?? null,
+          published:   article.published ?? null,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const reader  = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let rafId  = 0;
+      const flush = () => {
+        setInsight(accumulated.current);
+        rafId = 0;
+      };
+
+      outer: while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const raw = line.slice(6).trim();
+          if (raw === "[DONE]") break outer;
+          let parsed;
+          try { parsed = JSON.parse(raw); } catch { continue; }
+          if (parsed.error) throw new Error(parsed.error);
+          if (parsed.text) {
+            accumulated.current += parsed.text;
+            if (!rafId) rafId = requestAnimationFrame(flush);
+          }
+        }
+      }
+      if (rafId) cancelAnimationFrame(rafId);
+      setInsight(accumulated.current);
+    } catch (e) {
+      setError(e.message ?? "Failed to get insight.");
+    } finally {
+      setStreaming(false);
+    }
+  };
+
+  const sentCfg = SENTIMENT_CONFIG[article.sentiment] ?? SENTIMENT_CONFIG.neutral;
+
+  return (
+    <div className="mt-2">
+      <button
+        onClick={fetchInsight}
+        disabled={streaming}
+        className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg border transition-all hover:brightness-110 disabled:opacity-50"
+        style={{
+          backgroundColor: "var(--c-chip-bg)",
+          borderColor:     "var(--c-border)",
+          color:           "var(--c-accent)",
+        }}
+      >
+        {streaming ? (
+          <>
+            <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+            </svg>
+            Analyzing…
+          </>
+        ) : insight ? (
+          open ? "▲ Hide Insight" : "▼ Show Insight"
+        ) : (
+          <>
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            AI Insight
+          </>
+        )}
+      </button>
+
+      {open && (insight || error) && (
+        <div
+          className="mt-2 rounded-lg p-4 space-y-1"
+          style={{
+            backgroundColor: "rgba(99,102,241,0.05)",
+            border: "1px solid rgba(99,102,241,0.2)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <span
+              className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded"
+              style={{ backgroundColor: `${sentCfg.barColor}20`, color: sentCfg.barColor }}
+            >
+              FinBERT {article.sentiment ?? "neutral"}
+            </span>
+            <span className="text-[9px] text-slate-600">SARSA Market Impact Analysis</span>
+            {streaming && (
+              <span className="ml-auto text-[9px] text-indigo-400 animate-pulse">streaming…</span>
+            )}
+          </div>
+          {error
+            ? <p className="text-xs text-red-400">{error}</p>
+            : renderInsight(insight)
+          }
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ArticleList({ articles, symbol }) {
   if (!articles?.length) return null;
   return (
     <div
       className="rounded-xl p-6"
-      style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <div className="flex items-center gap-3 mb-5">
         <div>
@@ -141,11 +300,13 @@ function ArticleList({ articles }) {
             Source Data
           </p>
           <h2 className="text-sm font-semibold text-slate-100">Analyzed Articles</h2>
-          <p className="text-xs text-slate-600 mt-0.5">All headlines fed into FinBERT for classification</p>
+          <p className="text-xs text-slate-600 mt-0.5">
+            Alpaca Markets feed (Benzinga · Reuters) — click AI Insight for market impact analysis
+          </p>
         </div>
         <span
           className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0"
-          style={{ color: "#818cf8", backgroundColor: "rgba(99,102,241,0.1)", borderColor: "rgba(99,102,241,0.25)" }}
+          style={{ color: "var(--c-accent)", backgroundColor: "var(--c-chip-bg)", borderColor: "var(--c-border)" }}
         >
           {articles.length} articles
         </span>
@@ -154,13 +315,14 @@ function ArticleList({ articles }) {
       <ul className="space-y-3">
         {articles.map((a, i) => {
           const style = sourceBadgeStyle(a.source);
+          const sentCfg = SENTIMENT_CONFIG[a.sentiment] ?? SENTIMENT_CONFIG.neutral;
           return (
             <li
               key={i}
               className="rounded-lg p-4 flex flex-col gap-2"
-              style={{ backgroundColor: "rgba(15,23,42,0.5)", border: "1px solid rgba(51,65,85,0.35)" }}
+              style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-border-s)" }}
             >
-              {/* Top row: index + source badge + date */}
+              {/* Top row: index + source badge + sentiment + date */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold text-slate-600 bg-slate-800/60 flex-shrink-0">
                   {i + 1}
@@ -175,6 +337,16 @@ function ArticleList({ articles }) {
                   </span>
                 )}
 
+                {a.sentiment && (
+                  <span
+                    className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded flex-shrink-0"
+                    style={{ backgroundColor: `${sentCfg.barColor}18`, color: sentCfg.barColor }}
+                  >
+                    {sentCfg.icon} {a.sentiment}
+                    {a.probability ? ` ${Math.round(a.probability * 100)}%` : ""}
+                  </span>
+                )}
+
                 {a.published && (
                   <span className="text-[10px] text-slate-500 tabular-nums ml-auto flex-shrink-0">
                     {fmtDate(a.published)}
@@ -182,7 +354,7 @@ function ArticleList({ articles }) {
                 )}
               </div>
 
-              {/* Headline — clickable link */}
+              {/* Headline */}
               {a.url ? (
                 <a
                   href={a.url}
@@ -217,7 +389,7 @@ function ArticleList({ articles }) {
                       <span
                         key={sym}
                         className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: "rgba(99,102,241,0.15)", color: "#818cf8" }}
+                        style={{ backgroundColor: "var(--c-chip-bg)", color: "var(--c-accent)" }}
                       >
                         {sym}
                       </span>
@@ -225,6 +397,9 @@ function ArticleList({ articles }) {
                   </div>
                 )}
               </div>
+
+              {/* AI Insight — per article streaming explanation */}
+              <ArticleInsight article={a} symbol={symbol} />
             </li>
           );
         })}
@@ -289,7 +464,7 @@ export default function Sentiment() {
         <form
           onSubmit={handleSubmit}
           className="rounded-xl p-5 flex flex-wrap items-end gap-4"
-          style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+          style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
         >
           {/* Symbol picker */}
           <div className="flex flex-col gap-1.5">
@@ -383,7 +558,7 @@ export default function Sentiment() {
         {!loading && data && (
           <>
             <SentimentCard data={data} />
-            <ArticleList articles={data.articles} />
+            <ArticleList articles={data.articles} symbol={symbol} />
           </>
         )}
 
@@ -391,7 +566,7 @@ export default function Sentiment() {
         {!loading && !data && !error && (
           <div
             className="rounded-xl p-12 flex flex-col items-center gap-3 text-slate-600"
-            style={{ backgroundColor: "rgba(30,41,59,0.4)", border: "1px solid rgba(51,65,85,0.5)" }}
+            style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
           >
             <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10 text-slate-700">
               <circle cx="20" cy="20" r="14" />

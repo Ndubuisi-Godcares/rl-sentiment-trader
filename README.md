@@ -1,116 +1,236 @@
-# AI Sentiment Stock Market Trader
+# QuantSentinel — AI-Powered Stock Trading Platform
 
-### Abstract
-This project and research implements an automated trading system integrating **Reinforcement Learning (SARSA)** and **financial news sentiment analysis**. The system utilizes a complete Machine Learning pipeline featuring real-time data ingestion, historical backtesting, and live execution via the **Alpaca Trading API**.
-
-The architecture combines `FinBERT` for natural language processing of market news with a state-action-reward-state-action (SARSA) agent to optimize trading decisions (Buy/Sell/Hold) based on sentiment signals and market data.
+A full-stack trading analytics platform combining **SARSA reinforcement learning** with **FinBERT sentiment analysis** to make buy/sell/hold decisions on equities. The system includes a professional React dashboard, a FastAPI backend, and a live paper-trading integration via Alpaca Markets.
 
 ---
 
-### Technical Specifications
+## Architecture
 
-#### Core Components
-* **Sentiment Analysis Engine:** Utilizes [FinBERT: Financial Sentiment Analysis with BERT](https://arxiv.org/abs/2006.08097) to classify financial news sentiment, providing state signals to the RL agent.
-* **RL Agent:** Implements the **SARSA** algorithm to approximate the Q-value function and iteratively learn optimal trading policies.
-* **Execution Layer:** Interfaces with **Alpaca Markets API** for secure, real-time order management.
-* **Evaluation Engine:** Leverages **QuantStats** for comprehensive backtesting and risk metric calculation against the S&P 500 benchmark.
-
-#### Key Features
-1. **Adaptive Learning:** The SARSA agent refines strategies based on continuous reward feedback.
-2. **Real-Time Processing:** Low-latency classification of incoming news streams.
-3. **Risk Controls:** Integrated position sizing, stop-loss, and take-profit logic.
-4. **Simulation Environment:** Robust backtesting using historical data (2020–2024).
-
----
-
-### System Architecture
-<img width="905" height="530" alt="image" src="https://github.com/user-attachments/assets/d5e8555c-b5d4-4cd3-9679-34e5255c4bf2" />
+```
+React / Vite Dashboard
+        ↓
+FastAPI Backend
+        ↓
+SARSA Trading Engine
+        ↓
+FinBERT Sentiment Analysis
+        ↓
+Alpaca Markets API  ·  Yahoo Finance Data
+```
 
 ---
 
-### Performance Metrics
+## Performance (Baseline Backtest 2020 – 2024, SPY)
 
-**Backtest Period:** 2020 – 2024
-**Benchmark:** S&P 500 (SPY)
-
-| Metric | System Performance | Benchmark (SPY) |
-| :--- | :--- | :--- |
+| Metric | QuantSentinel | SPY Benchmark |
+| :--- | :---: | :---: |
 | **Cumulative Return** | **80.81%** | 79.08% |
-| **CAGR** | **9.35%** | **9.19%** |
-| **Sharpe Ratio** | **0.47** | **0.41%** |
-| **Max Drawdown** | **-27.06%** | **-33.68%** |
+| **CAGR** | **9.35%** | 9.19% |
+| **Sharpe Ratio** | **0.47** | 0.41 |
+| **Max Drawdown** | **-27.06%** | -33.68% |
 
-> **Note:** Detailed tear sheets and performance reports are generated via `QuantStats`.
-
-![Cumulative Return vs SPY](https://github.com/user-attachments/assets/3bf10715-bb39-47a7-8daf-a4c90c1a0be4)
+> Backtest results are generated via QuantStats and stored in `reports/tearsheet.html`.
 
 ---
 
-### Installation & Configuration
+## Frontend Dashboard
 
-#### 1. Clone and Install Dependencies
+The React/Vite dashboard includes 7 pages and 9 visual themes.
+
+### Pages
+
+| Page | Description |
+| :--- | :--- |
+| **Dashboard** | Portfolio value, KPI cards, equity curve, open positions, live sentiment signal |
+| **Backtest** | Run SARSA backtests, track live progress, view equity curve and trade log |
+| **Sentiment** | Live FinBERT classification of financial news headlines per symbol |
+| **Trade Log** | Full history of backtest trades with filtering |
+| **Benchmark** | Performance comparison against SPY and other benchmarks |
+| **Analysis** | Deep strategy analysis — Q-table heatmap, risk metrics, grade scoring |
+| **Research Report** | AI-generated explainability report with strategy attribution |
+
+### Themes
+
+9 built-in themes — 5 dark, 4 light — switched from the sidebar dot strip:
+
+| Theme | Type | Character |
+| :--- | :--- | :--- |
+| Midnight | Dark | Classic dark indigo |
+| Ocean | Dark | Deep blue |
+| Dusk | Dark | Indigo night / purple |
+| Forest | Dark | Dark green |
+| Graphite | Dark | Neutral dark grey |
+| Ivory | Light | Warm elegant gold |
+| Crystal | Light | Clean blue-indigo |
+| White | Light | Institutional clean |
+| Paper | Light | Blueprint sky blue |
+
+All themes pass **WCAG AA contrast** (4.5:1 for normal text, 3:1 for UI components) across all pages.
+
+---
+
+## Tech Stack
+
+### Frontend
+- React + Vite
+- Tailwind CSS
+- Recharts (AreaChart, BarChart, LineChart)
+- React Router
+- Axios
+
+### Backend
+- FastAPI + Uvicorn
+- Pydantic
+- Python 3.10+
+
+### Trading Engine
+- SARSA reinforcement learning (custom implementation on Lumibot)
+- FinBERT (`yiyanghkust/finbert-tone` via Hugging Face)
+- QuantStats for tearsheet generation
+- Alpaca Markets API for execution
+- Yahoo Finance for historical data
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
 ```bash
 git clone https://github.com/Ndubuisi-Godcares/ReinforceTrader-RL-Based-Stock-Trading-with-Sentiment-Analysis.git
-cd (filename) #Navigate to the folder
-pip install -r requirements.txt
-```
----
-
-### Configure API Credentials
-
-Create an [Alpaca](https://alpaca.markets/) account and add your keys to `config.py`:
-
-## API Keys
-
-1. Create an [Alpaca](https://alpaca.markets/) account to obtain API keys.
-
-2. Add your Alpaca API keys to the respective scripts (`news_classified.py` and `SARSA1.py`).
-
-   Make sure to update the API credentials in both scripts:
-   - **news_classified.py**: Insert your API key and secret for fetching news.
-   - **SARSA1.py**: Insert your API key and secret for executing trades.
-```python
-ALPACA_API_KEY = 'your-api-key'
-ALPACA_SECRET_KEY = 'your-secret-key'
+cd rl-sentiment-trader
 ```
 
----
+### 2. Backend
 
-## Usage
+```bash
+pip install -r backend/requirements.txt
+```
 
-Ensure credentials are correctly mapped in:
+Create a `.env` file in the project root:
+
+```env
+API_KEY=your_alpaca_key
+API_SECRET=your_alpaca_secret
+BASE_URL=https://paper-api.alpaca.markets/v2
 ```
-news_classified.py (News ingestion)
-SARSA1.py (Trade execution)
+
+Start the backend:
+
+```bash
+uvicorn backend.app.main:app --reload
 ```
+
+### 3. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The dashboard is available at `http://localhost:5173`.
+
+### 4. Run a Backtest
+
+Either trigger it from the **Backtest** page in the dashboard, or run directly:
+
+```bash
+python trading_engine/sarsa-v1.py
+```
+
+Results are saved to `logs/` and `reports/tearsheet.html`.
+
 ---
 
 ## Repository Structure
 
-```bash
-.
-├── news_classified.py       # News sentiment classification with FinBERT
-├── SARSA1.py                # Reinforcement Learning SARSA trading logic
-├── backtest.py              # Backtest engine for historical simulation
-├── config.py                # API credentials and config
-├── requirements.txt         # Project dependencies
-├── tearsheet.html           # QuantStats report
-└── README.md                # Project documentation
+```
+rl-sentiment-trader/
+│
+├── frontend/                   # React/Vite dashboard
+│   ├── src/
+│   │   ├── pages/              # Dashboard, Backtest, Sentiment, Trades, Comparison, Analysis, AIReport
+│   │   ├── components/         # EquityChart, MetricCard, Sidebar, Topbar, PositionsTable, SentimentWidget
+│   │   ├── context/            # ThemeContext (9 themes + CSS variable system)
+│   │   └── services/           # Axios API client
+│   └── vite.config.js
+│
+├── backend/
+│   └── app/
+│       ├── main.py             # FastAPI app — /metrics, /portfolio, /trades, /positions, /sentiment, /backtest
+│       └── api/
+│
+├── trading_engine/
+│   ├── sarsa-v1.py             # SARSA agent (Lumibot strategy)
+│   ├── finbert_utils.py        # FinBERT sentiment pipeline
+│   └── news_classified.py      # Alpaca news fetcher + classifier
+│
+├── logs/                       # Q-tables, trade CSVs, tearsheet outputs
+├── reports/                    # tearsheet.html (QuantStats)
+├── data/                       # Benchmark CSVs
+└── CLAUDE.md                   # AI coding assistant instructions
 ```
 
 ---
 
+## Strategy Details
+
+### SARSA Agent
+
+The `SARSATrader` class extends Lumibot's `Strategy`. On each daily iteration:
+
+1. Fetches a 3-day news window for the target symbol via Alpaca
+2. Classifies headlines with FinBERT → `positive / negative / neutral`
+3. Selects an action using ε-greedy policy over the Q-table
+4. Executes bracket orders with fixed take-profit (20%) and stop-loss (5%)
+5. Calculates reward and updates the Q-table using the SARSA update rule
+
+**Hyperparameters:**
+
+| Parameter | Value |
+| :--- | :--- |
+| Learning rate (α) | 0.1 |
+| Discount factor (γ) | 0.9 |
+| Exploration rate (ε) | 0.1 |
+| Cash at risk | 50% |
+| Take profit | 20% |
+| Stop loss | 5% |
+
+### FinBERT
+
+Uses `yiyanghkust/finbert-tone` via the Hugging Face `pipeline` API. CUDA is used automatically when available. Returns a `(probability, sentiment)` tuple for each batch of headlines.
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| GET | `/metrics` | QuantStats performance metrics (stats CSV as JSON) |
+| GET | `/portfolio` | Portfolio time-series and live Alpaca account value |
+| GET | `/trades` | Backtest trade log |
+| GET | `/positions` | Current open positions (Alpaca paper account) |
+| GET | `/sentiment` | Latest FinBERT sentiment for a given symbol |
+| POST | `/backtest` | Trigger a new SARSA backtest run |
+
+---
+
 ## Roadmap
-* Data Sources: Integration of alternative sentiment streams (e.g., Reddit, Twitter API).
-* Model Optimization: Migration to Deep Q-Network (DQN) or Proximal Policy Optimization (PPO).
-* Asset Management: Support for multi-asset portfolio rebalancing.
+
+- [ ] Walk-forward validation across multiple time windows
+- [ ] Technical indicator states (RSI, MACD) alongside sentiment
+- [ ] Multi-asset portfolio rebalancing
+- [ ] Persistent Q-table with database storage
+- [ ] Live (non-paper) trading mode
+- [ ] DQN / PPO upgrade from tabular SARSA
+- [ ] Cloud deployment (Vercel frontend + Render backend)
 
 ---
 
-## References & Acknowledgements
+## References
 
-- [FinBERT: Financial Sentiment Analysis with BERT](https://github.com/ProsusAI/finBERT)
-- [Alpaca Markets API Documentation](https://alpaca.markets/)
-- [QuantStats: Portfolio Analytics](https://github.com/ranaroussi/quantstats)
-
----
+- [FinBERT: Financial Sentiment Analysis with BERT](https://arxiv.org/abs/2006.08097)
+- [Alpaca Markets API](https://alpaca.markets/)
+- [QuantStats Portfolio Analytics](https://github.com/ranaroussi/quantstats)
+- [Lumibot Trading Framework](https://lumibot.lumiwealth.com/)

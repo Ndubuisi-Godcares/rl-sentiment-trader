@@ -34,7 +34,7 @@ export function getStoredSymbol() {
   return localStorage.getItem("sarsa-symbol") ?? "SPY";
 }
 
-const TYPE_COLOR = { ETF: "#6ee7b7", Stock: "#818cf8" };
+const TYPE_COLOR = { ETF: "var(--c-positive)", Stock: "var(--c-accent)" };
 
 export default function SymbolPicker({ value, onChange, disabled = false, size = "md" }) {
   const current = SYMBOLS.find((s) => s.ticker === value) ?? { ticker: value, name: value, type: "Stock" };
@@ -55,8 +55,8 @@ export default function SymbolPicker({ value, onChange, disabled = false, size =
             disabled={disabled}
             className="appearance-none pl-2 pr-6 py-1 rounded-lg text-xs font-bold border outline-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: "rgba(30,41,59,0.8)",
-              borderColor: "rgba(51,65,85,0.6)",
+              backgroundColor: "var(--c-input)",
+              borderColor: "var(--c-border)",
               color: typeColor,
             }}
           >
@@ -80,7 +80,7 @@ export default function SymbolPicker({ value, onChange, disabled = false, size =
   return (
     <div
       className="flex items-center gap-3 px-3 py-2 rounded-lg"
-      style={{ backgroundColor: "rgba(30,41,59,0.6)", border: "1px solid rgba(51,65,85,0.5)" }}
+      style={{ backgroundColor: "var(--c-bg2)", border: "1px solid var(--c-border)" }}
     >
       <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Symbol</span>
       <div className="relative">

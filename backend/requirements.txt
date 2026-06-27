@@ -6,3 +6,8 @@ alpaca-trade-api
 pandas
 torch
 transformers
+anthropic
+openai
+google-generativeai
+yfinance
+requests

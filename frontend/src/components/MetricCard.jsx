@@ -12,9 +12,9 @@
  */
 
 function accentColor(colorClass) {
-  if (colorClass?.includes("emerald")) return "#34d399";
-  if (colorClass?.includes("red"))     return "#f87171";
-  return "#6366f1"; // default indigo
+  if (colorClass?.includes("emerald")) return "var(--c-positive)";
+  if (colorClass?.includes("red"))     return "var(--c-negative)";
+  return "var(--c-accent)";
 }
 
 function TrendArrow({ colorClass }) {
@@ -42,8 +42,8 @@ export default function MetricCard({ label, value, sub, color = "text-white", lo
     <div
       className="relative rounded-xl px-4 py-3.5 flex flex-col gap-1 min-w-0 overflow-hidden"
       style={{
-        backgroundColor: "rgba(30,41,59,0.4)",
-        border: "1px solid rgba(51,65,85,0.5)",
+        backgroundColor: "var(--c-bg2)",
+        border: "1px solid var(--c-border)",
         borderLeft: `3px solid ${accent}`,
         backdropFilter: "blur(8px)",
       }}
