@@ -446,7 +446,7 @@ export default function Sentiment() {
 
   return (
     <div className="min-h-screen text-slate-100">
-      <Topbar title="Sentiment" lastUpdated={lastUpdated} onRefresh={() => data && analyze()} />
+      <Topbar title="Sentiment" lastUpdated={lastUpdated} onRefresh={() => analyze(symbol, lookback)} />
 
       <main className="pt-14 px-6 py-6 space-y-6 max-w-screen-xl">
         {/* Page header */}

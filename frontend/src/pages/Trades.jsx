@@ -83,7 +83,7 @@ function LiveTradesTable({ trades }) {
               <tr
                 key={t.id ?? idx}
                 className="hover:bg-indigo-500/5 transition-colors"
-                style={{ backgroundColor: idx % 2 === 0 ? "rgba(30,41,59,0.2)" : "transparent" }}
+                style={{ backgroundColor: idx % 2 === 0 ? "var(--c-bg)" : "transparent" }}
               >
                 <td className="py-2.5 pl-0 font-semibold text-slate-100 tracking-wide">{t.symbol}</td>
                 <td className="py-2.5"><SideBadge side={t.side} /></td>
@@ -144,7 +144,7 @@ function BacktestTradesTable({ trades }) {
             <tr
               key={idx}
               className="hover:bg-indigo-500/5 transition-colors"
-              style={{ backgroundColor: idx % 2 === 0 ? "rgba(30,41,59,0.2)" : "transparent" }}
+              style={{ backgroundColor: idx % 2 === 0 ? "var(--c-bg)" : "transparent" }}
             >
               {columns.map((col, ci) => (
                 <td

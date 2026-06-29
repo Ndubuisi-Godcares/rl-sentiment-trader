@@ -103,7 +103,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen text-slate-100">
       {/* Fixed topbar — sits above main content */}
-      <Topbar title="Dashboard" lastUpdated={lastUpdated} onRefresh={load} />
+      <Topbar title="Dashboard" lastUpdated={lastUpdated} onRefresh={() => load(symbol)} />
 
       {/* Content area — offset for topbar height (56px = h-14) */}
       <main

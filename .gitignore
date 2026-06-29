@@ -1,8 +1,34 @@
+# Secrets
 .env
 .env.local
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
-node_modules/
 *.db
+
+# Node
+node_modules/
+
+# Frontend build output
+frontend/dist/
+frontend/.vercel/
+
+# ── Generated backtest output ─────────────────────────────────────────────────
+# Lumibot writes a new timestamped set per run — not source code, unbounded growth
+logs/
+
+# Generated benchmark / market data CSVs
+data/benchmark_*.csv
+data/spy_benchmark*.csv
+data/wf_*.csv
+
+# Generated tearsheets / reports
+reports/
+
+# ── Dev/scratch files ─────────────────────────────────────────────────────────
+try.py
+
+# Claude Code project instructions (local only)
 CLAUDE.md

@@ -666,9 +666,18 @@ function EmptyState() {
 
 const TODAY = new Date().toISOString().split("T")[0];
 
+function _loadCachedBacktest() {
+  try {
+    const s = localStorage.getItem("sarsa_backtest_cache");
+    return s ? JSON.parse(s) : null;
+  } catch { return null; }
+}
+
 export default function Backtest() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const cachedData = useState(() => _loadCachedBacktest())[0];
+  const [data, setData] = useState(cachedData);
+  // Skip the skeleton when we already have cached data to show
+  const [loading, setLoading] = useState(!cachedData);
   const [triggering, setTriggering] = useState(false);
   const [started, setStarted] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
@@ -686,9 +695,29 @@ export default function Backtest() {
       setData(d);
       setLastUpdated(new Date());
       setError(null);
+      // Persist last-good data so navigate-back shows it instantly
+      if (d.available) {
+        try { localStorage.setItem("sarsa_backtest_cache", JSON.stringify(d)); } catch {}
+      }
       if (!d.running) {
         setStarted(false);
         localStorage.removeItem("sarsa_backtest_run");
+      } else {
+        // Restore running-state in the same render batch to avoid blank flash
+        const saved = localStorage.getItem("sarsa_backtest_run");
+        if (saved) {
+          try {
+            const { startedAt: savedAt, startDate: sd, endDate: ed, symbol: sym } = JSON.parse(saved);
+            setStarted(true);
+            setStartedAt(savedAt);
+            if (sd) setStartDate(sd);
+            if (ed) setEndDate(ed);
+            if (sym) setSymbol(sym);
+          } catch {}
+        } else {
+          setStarted(true);
+          setStartedAt(Date.now());
+        }
       }
       return d;
     } catch {
@@ -697,27 +726,11 @@ export default function Backtest() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setSymbol]);
 
-  // On mount: restore running state from localStorage if backend confirms still running
+  // On mount: fetch fresh data (cached data shows immediately while this runs)
   useEffect(() => {
-    load().then((d) => {
-      if (d?.running) {
-        const saved = localStorage.getItem("sarsa_backtest_run");
-        if (saved) {
-          const { startedAt: savedAt, startDate: sd, endDate: ed, symbol: sym } = JSON.parse(saved);
-          setStarted(true);
-          setStartedAt(savedAt);
-          if (sd) setStartDate(sd);
-          if (ed) setEndDate(ed);
-          if (sym) setSymbol(sym);
-        } else {
-          // Running but no localStorage record — still show progress from now
-          setStarted(true);
-          setStartedAt(Date.now());
-        }
-      }
-    });
+    load();
   }, [load]);
 
   // Poll every 5 s while running (either confirmed by server or optimistically started)
